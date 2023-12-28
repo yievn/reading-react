@@ -6,7 +6,7 @@
  *
  * @flow
  */
-
+/**REACT_PROVIDER_TYPE, REACT_CONTEXT_TYPE用于标识React的provider和Context类型 */
 import {REACT_PROVIDER_TYPE, REACT_CONTEXT_TYPE} from 'shared/ReactSymbols';
 
 import type {ReactProviderType} from 'shared/ReactTypes';
@@ -29,8 +29,8 @@ export function createContext<T>(defaultValue: T): ReactContext<T> {
     // supports within in a single renderer. Such as parallel server rendering.
     _threadCount: 0,
     // These are circular
-    Provider: (null: any),
-    Consumer: (null: any),
+    Provider: (null: any), // 提供者
+    Consumer: (null: any), // 消费者
 
     // Add these to use same hidden class in VM as ServerContext
     _defaultValue: (null: any),
