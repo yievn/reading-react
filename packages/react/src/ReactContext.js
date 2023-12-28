@@ -18,15 +18,25 @@ export function createContext<T>(defaultValue: T): ReactContext<T> {
 
   const context: ReactContext<T> = {
     $$typeof: REACT_CONTEXT_TYPE,
-    // As a workaround to support multiple concurrent renderers, we categorize
-    // some renderers as primary and others as secondary. We only expect
-    // there to be two concurrent renderers at most: React Native (primary) and
-    // Fabric (secondary); React DOM (primary) and React ART (secondary).
-    // Secondary renderers store their context values on separate fields.
+    /**
+     * 在React的Context对象中，_currentValue和_currentValue2这两个字段是用来支持并发模式的。
+     * 在并发模式下，React可能会同时进行多个渲染任务。
+     * 例如，React可能在主线程上进行一个渲染任务，同时在一个后台线程上进行另一个渲染任务。
+     * 这两个渲染任务可能会使用到同一个Context对象。
+     * 为了避免这两个渲染任务之间的冲突，React为每个Context对象提供了两个字段_currentValue和_currentValue2，
+     * 用来分别存储这两个渲染任务的Context值。
+     * 当一个渲染任务开始时，React会根据这个任务的优先级来选择使用_currentValue还是_currentValue2。
+     * 这样，即使两个渲染任务同时进行，它们也可以各自独立地读取和更新Context的值，而不会相互干扰。
+     * 
+     * 在当前的React实现中，设计了两个并发渲染线程：主渲染线程和后台渲染线程。
+     * 这是基于React团队对于大多数应用场景的考虑，
+     * 即大部分时间，一个React应用最多只需要同时进行两个渲染任务。
+     */
     _currentValue: defaultValue,
     _currentValue2: defaultValue,
     // Used to track how many concurrent renderers this context currently
     // supports within in a single renderer. Such as parallel server rendering.
+    //用于跟踪此上下文当前有多少个并发呈现器
     _threadCount: 0,
     // These are circular
     Provider: (null: any), // 提供者
@@ -56,6 +66,7 @@ export function createContext<T>(defaultValue: T): ReactContext<T> {
     };
     // $FlowFixMe[prop-missing]: Flow complains about not setting a value, which is intentional here
     Object.defineProperties(Consumer, {
+      /**不支持<Context.Consumer.Provider> */
       Provider: {
         get() {
           if (!hasWarnedAboutUsingConsumerProvider) {
@@ -96,6 +107,7 @@ export function createContext<T>(defaultValue: T): ReactContext<T> {
         },
       },
       Consumer: {
+        // 不支持Context.Consumer.Consumer
         get() {
           if (!hasWarnedAboutUsingNestedContextConsumers) {
             hasWarnedAboutUsingNestedContextConsumers = true;

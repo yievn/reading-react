@@ -83,6 +83,15 @@ export const REACT_POSTPONE_TYPE: symbol = Symbol.for('react.postpone');
 const MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
 const FAUX_ITERATOR_SYMBOL = '@@iterator';
 
+/**etIteratorFn函数的主要作用是获取一个对象的迭代器函数。在JavaScript中，
+ * 一个对象如果有一个名为Symbol.iterator的方法，
+ * 那么这个对象就是可迭代的，可以使用for...of循环进行遍历。
+ * 
+ * getIteratorFn函数的作用是获取一个对象的迭代器函数，
+ * 以便可以使用这个函数来遍历这个对象。
+ * 这在React的内部实现中被用于处理可迭代的子元素，
+ * 例如在渲染数组或其他可迭代的子元素时。 
+ */
 export function getIteratorFn(maybeIterable: ?any): ?() => ?Iterator<any> {
   if (maybeIterable === null || typeof maybeIterable !== 'object') {
     return null;
